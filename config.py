@@ -39,7 +39,8 @@ class Config:
     SYNASTRY_PHOTO_STARS: int = 175
     
     # Лимиты
-    FREE_READINGS_LIMIT: int = 1
+    FREE_READINGS_LIMIT: int = 3
     REFERRAL_BONUS_DAYS: int = 1
+
 
 config = Config()
