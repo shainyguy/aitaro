@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Astro AI ✨</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-gold: #f59e0b;
+            --gradient-primary: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --radius-lg: 20px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .premium-badge {
+            background: var(--gradient-primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-icon { font-size: 24px; }
+
+        .status-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Limit Banner */
+        .limit-banner {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(236, 72, 153, 0.15));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .limit-banner.show { display: block; }
+
+        .limit-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .limit-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .card:active { transform: scale(0.98); }
+        .card.locked { opacity: 0.5; position: relative; }
+        .card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .feature-card:active { transform: scale(0.95); }
+        .feature-card.locked { opacity: 0.5; }
+        .feature-card.locked::before {
+            content: '🔒';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 12px;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature-title { font-weight: 600; font-size: 14px; }
+        .feature-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Main CTA */
+        .main-cta {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .main-cta-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .main-cta-text { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--gradient-primary); color: white; }
+        .btn-secondary {
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            padding: 12px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .nav-item.active { color: var(--accent-purple); }
+        .nav-icon { font-size: 22px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            width: 100%;
+            background: var(--bg-primary);
+            border-radius: 24px 24px 0 0;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title { font-size: 18px; font-weight: 600; }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-content { padding: 20px; }
+
+        /* Subscription */
+        .sub-card {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.15));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .sub-crown { font-size: 48px; margin-bottom: 8px; }
+        .sub-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+        
+        .sub-features { text-align: left; margin-bottom: 20px; }
+        .sub-feature {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sub-feature::before { content: '✓'; color: var(--accent-gold); }
+
+        .sub-price {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-period { color: var(--text-muted); font-size: 14px; }
+
+        /* Pages */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 2000;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Tarot */
+        .tarot-cards {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 24px 0;
+        }
+
+        .tarot-card {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(180deg, #1a1a2e, #0f0f1a);
+            border: 2px solid var(--accent-purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tarot-card::before { content: '🎴'; }
+        .tarot-card.revealed::before { content: attr(data-emoji); }
+        .tarot-card.selected {
+            border-color: var(--accent-gold);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .result-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-purple);
+            margin-bottom: 12px;
+        }
+
+        .result-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast">
+        <span id="toastIcon">✨</span>
+        <span id="toastText"></span>
+    </div>
+
+    <div class="container">
+        <!-- ===== ГЛАВНАЯ ===== -->
+        <div class="page active" id="page-home">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">🔮</div>
+                    <span class="logo-text">Astro AI</span>
+                </div>
+                <div class="user-badge">
+                    <span class="premium-badge" id="premiumBadge" style="display:none;">👑 PRO</span>
+                    <div class="avatar" id="avatar" onclick="showPage('profile')">👤</div>
+                </div>
+            </div>
+
+            <!-- Статус -->
+            <div class="status-banner" id="statusBanner">
+                <div class="status-left">
+                    <span class="status-icon">🎁</span>
+                    <div>
+                        <div class="status-text">Бесплатных попыток:</div>
+                        <div class="status-value" id="freeLeft">1 из 1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Лимит исчерпан -->
+            <div class="limit-banner" id="limitBanner">
+                <div class="limit-title">⚠️ Лимит исчерпан</div>
+                <div class="limit-text">Оформи подписку для безлимитного доступа</div>
+                <button class="btn btn-primary btn-small" onclick="openSubscription()">
+                    👑 Оформить подписку
+                </button>
+            </div>
+
+            <!-- CTA -->
+            <div class="main-cta" onclick="useFeature('tarot')">
+                <div class="main-cta-title">🎴 Карта дня</div>
+                <div class="main-cta-text">Вытяни карту и узнай послание Вселенной</div>
+                <button class="btn btn-primary btn-small">Вытянуть карту</button>
+            </div>
+
+            <!-- Функции -->
+            <div class="feature-grid">
+                <div class="feature-card" id="feat-tarot" onclick="useFeature('tarot')">
+                    <div class="feature-icon">🎴</div>
+                    <div class="feature-title">Таро</div>
+                    <div class="feature-desc">Расклады</div>
+                </div>
+                <div class="feature-card" id="feat-horoscope" onclick="useFeature('horoscope')">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-title">Гороскоп</div>
+                    <div class="feature-desc">На сегодня</div>
+                </div>
+                <div class="feature-card locked" id="feat-compat" onclick="useFeature('compatibility')">
+                    <div class="feature-icon">💕</div>
+                    <div class="feature-title">Совместимость</div>
+                    <div class="feature-desc">PRO</div>
+                </div>
+                <div class="feature-card locked" id="feat-money" onclick="useFeature('money')">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Деньги</div>
+                    <div class="feature-desc">PRO</div>
+                </div>
+            </div>
+
+            <!-- Подписка -->
+            <div class="card" onclick="openSubscription()">
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <span style="font-size:36px;">👑</span>
+                    <div>
+                        <div style="font-weight:600;">Разблокируй всё</div>
+                        <div style="font-size:12px;color:var(--text-muted);">Безлимит • Все функции</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ТАРО ===== -->
+        <div class="page" id="page-tarot">
+            <div class="header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button onclick="showPage('home')" style="background:none;border:none;color:white;font-size:20px;">←</button>
+                    <span style="font-weight:600;">🎴 Расклад Таро</span>
+                </div>
+            </div>
+
+            <div style="text-align:center;padding:20px 0;">
+                <p style="color:var(--text-secondary);">Выбери одну карту</p>
+            </div>
+
+            <div class="tarot-cards" id="tarotCards">
+                <div class="tarot-card" onclick="selectCard(0)"></div>
+                <div class="tarot-card" onclick="selectCard(1)"></div>
+                <div class="tarot-card" onclick="selectCard(2)"></div>
+            </div>
+
+            <div id="tarotResult" style="display:none;">
+                <div class="result-card">
+                    <div class="result-title" id="cardName">🎴 Маг</div>
+                    <div class="result-text" id="cardText">Интерпретация карты...</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="tarotBtn" onclick="doReading()" style="margin-top:20px;">
+                🔮 Получить расклад
+            </button>
+        </div>
+
+        <!-- ===== ГОРОСКОП ===== -->
+        <div class="page" id="page-horoscope">
+            <div class="header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button onclick="showPage('home')" style="background:none;border:none;color:white;font-size:20px;">←</button>
+                    <span style="font-weight:600;">⭐ Гороскоп</span>
+                </div>
+            </div>
+
+            <div style="text-align:center;padding:30px 0;">
+                <div style="font-size:64px;" id="horoEmoji">♈</div>
+                <div style="font-size:24px;font-weight:700;" id="horoName">Овен</div>
+            </div>
+
+            <div class="card" id="horoscopeContent">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+
+        <!-- ===== ПРОФИЛЬ ===== -->
+        <div class="page" id="page-profile">
+            <div class="header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button onclick="showPage('home')" style="background:none;border:none;color:white;font-size:20px;">←</button>
+                    <span style="font-weight:600;">👤 Профиль</span>
+                </div>
+            </div>
+
+            <div style="text-align:center;padding:24px 0;">
+                <div class="avatar" style="width:80px;height:80px;font-size:36px;margin:0 auto 16px;" id="profileAvatar">👤</div>
+                <div style="font-size:22px;font-weight:700;" id="profileName">Путник</div>
+                <div style="color:var(--accent-purple);margin-top:4px;" id="profileZodiac">♈ Овен</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+                <div class="card" style="text-align:center;margin:0;">
+                    <div style="font-size:22px;font-weight:700;color:var(--accent-purple);" id="statReadings">0</div>
+                    <div style="font-size:11px;color:var(--text-muted);">Раскладов</div>
+                </div>
+                <div class="card" style="text-align:center;margin:0;">
+                    <div style="font-size:22px;font-weight:700;color:var(--accent-purple);" id="statFree">1</div>
+                    <div style="font-size:11px;color:var(--text-muted);">Осталось</div>
+                </div>
+                <div class="card" style="text-align:center;margin:0;">
+                    <div style="font-size:22px;font-weight:700;color:var(--accent-purple);" id="statBonus">0</div>
+                    <div style="font-size:11px;color:var(--text-muted);">Бонус дн.</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <div style="font-weight:600;">⭐ Подписка</div>
+                        <div style="font-size:12px;color:var(--text-muted);" id="subStatus">Не активна</div>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="openSubscription()">Оформить</button>
+                </div>
+            </div>
+
+            <div class="card" onclick="shareReferral()">
+                <div style="font-weight:600;">👥 Пригласить друга</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                    Получи +1 день за каждого друга
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </div>
+        <div class="nav-item" id="nav-tarot" onclick="useFeature('tarot')">
+            <span class="nav-icon">🎴</span>
+            <span>Таро</span>
+        </div>
+        <div class="nav-item" id="nav-horoscope" onclick="useFeature('horoscope')">
+            <span class="nav-icon">⭐</span>
+            <span>Гороскоп</span>
+        </div>
+        <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </div>
+    </nav>
+
+    <!-- МОДАЛКА ПОДПИСКИ -->
+    <div class="modal-overlay" id="subModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">👑 Премиум</span>
+                <button class="modal-close" onclick="closeSubscription()">✕</button>
+            </div>
+            <div class="modal-content">
+                <div class="sub-card">
+                    <div class="sub-crown">👑</div>
+                    <div class="sub-title">Astro AI Premium</div>
+                    <div class="sub-features">
+                        <div class="sub-feature">Безлимитные расклады</div>
+                        <div class="sub-feature">Ежедневный гороскоп</div>
+                        <div class="sub-feature">Анализ совместимости</div>
+                        <div class="sub-feature">Денежный прогноз</div>
+                        <div class="sub-feature">Кармический разбор</div>
+                    </div>
+                    <div class="sub-price">490 ₽</div>
+                    <div class="sub-period">в месяц</div>
+                </div>
+
+                <button class="btn btn-primary" style="margin-top:20px;" onclick="pay('stars')">
+                    ⭐ Оплатить 250 Stars
+                </button>
+                <button class="btn btn-secondary" style="margin-top:12px;" onclick="pay('yookassa')">
+                    💳 Оплатить картой
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONFIG ============
+        const API_URL = window.location.origin + '/api';
+        const tg = window.Telegram?.WebApp;
+
+        // ============ STATE ============
+        let state = {
+            userId: null,
+            userName: 'Путник',
+            zodiac: null,
+            zodiacEmoji: '♈',
+            isPremium: false,
+            freeUsed: 0,
+            freeLimit: 1,
+            readings: 0,
+            bonusDays: 0
+        };
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            if (tg) {
+                tg.ready();
+                tg.expand();
+                tg.setHeaderColor('#0a0a0f');
+                tg.setBackgroundColor('#0a0a0f');
+
+                if (tg.initDataUnsafe?.user) {
+                    state.userId = tg.initDataUnsafe.user.id;
+                    state.userName = tg.initDataUnsafe.user.first_name || 'Путник';
+                }
+            }
+
+            await loadUserData();
+            updateUI();
+        }
+
+        async function loadUserData() {
+            if (!state.userId) return;
+
+            try {
+                const res = await fetch(`${API_URL}/user/${state.userId}`, {
+                    headers: { 'X-Telegram-Init-Data': tg?.initData || '' }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    state = { ...state, ...data };
+                }
+            } catch (e) {
+                console.log('Offline mode');
+            }
+        }
+
+        // ============ UI ============
+        function updateUI() {
+            // Имя
+            document.getElementById('profileName').textContent = state.userName;
+            document.getElementById('avatar').textContent = getEmoji(state.userName);
+            document.getElementById('profileAvatar').textContent = getEmoji(state.userName);
+
+            // Зодиак
+            if (state.zodiac) {
+                document.getElementById('profileZodiac').textContent = `${state.zodiacEmoji} ${state.zodiac}`;
+                document.getElementById('horoEmoji').textContent = state.zodiacEmoji;
+                document.getElementById('horoName').textContent = state.zodiac;
+            }
+
+            // Статистика
+            document.getElementById('statReadings').textContent = state.readings;
+            document.getElementById('statBonus').textContent = state.bonusDays;
+
+            const freeLeft = Math.max(0, state.freeLimit - state.freeUsed);
+            document.getElementById('freeLeft').textContent = `${freeLeft} из ${state.freeLimit}`;
+            document.getElementById('statFree').textContent = freeLeft;
+
+            // Премиум
+            if (state.isPremium) {
+                document.getElementById('premiumBadge').style.display = 'inline-block';
+                document.getElementById('statusBanner').style.display = 'none';
+                document.getElementById('limitBanner').classList.remove('show');
+                document.getElementById('subStatus').textContent = 'Активна ✓';
+                document.getElementById('subStatus').style.color = '#10b981';
+
+                document.querySelectorAll('.feature-card.locked').forEach(el => el.classList.remove('locked'));
+            } else {
+                document.getElementById('premiumBadge').style.display = 'none';
+                document.getElementById('statusBanner').style.display = 'flex';
+
+                if (freeLeft <= 0) {
+                    document.getElementById('limitBanner').classList.add('show');
+                }
+            }
+        }
+
+        function getEmoji(name) {
+            const e = ['🌟', '✨', '💫', '⭐', '🔮', '🌙'];
+            return e[name.charCodeAt(0) % e.length];
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${id}`).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const nav = document.getElementById(`nav-${id}`);
+            if (nav) nav.classList.add('active');
+
+            if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastIcon').textContent = type === 'success' ? '✨' : '⚠️';
+            document.getElementById('toastText').textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ============ FEATURES ============
+        async function useFeature(feature) {
+            const proFeatures = ['compatibility', 'money', 'karma'];
+
+            // PRO функции
+            if (!state.isPremium && proFeatures.includes(feature)) {
+                showToast('Доступно с подпиской', 'error');
+                openSubscription();
+                return;
+            }
+
+            // Проверка лимита
+            if (!state.isPremium && state.freeUsed >= state.freeLimit) {
+                showToast('Лимит исчерпан', 'error');
+                openSubscription();
+                return;
+            }
+
+            // Открываем функцию
+            if (feature === 'tarot') {
+                showPage('tarot');
+                resetTarot();
+            } else if (feature === 'horoscope') {
+                showPage('horoscope');
+                loadHoroscope();
+            }
+        }
+
+        // ============ TAROT ============
+        let selectedCard = -1;
+        const CARDS = [
+            { name: 'Шут', emoji: '🃏', text: 'Новые начинания и свобода. Время для приключений!' },
+            { name: 'Маг', emoji: '🎩', text: 'Сила воли и мастерство. Все ресурсы у тебя есть.' },
+            { name: 'Жрица', emoji: '🌙', text: 'Интуиция и мудрость. Прислушайся к себе.' },
+            { name: 'Императрица', emoji: '👑', text: 'Изобилие и творчество. Время расцвета.' },
+            { name: 'Фортуна', emoji: '🎡', text: 'Перемены и удача. Судьба благоволит!' },
+            { name: 'Звезда', emoji: '⭐', text: 'Надежда и вдохновение. Всё будет хорошо.' },
+            { name: 'Солнце', emoji: '☀️', text: 'Радость и успех! Прекрасный период.' },
+            { name: 'Мир', emoji: '🌍', text: 'Завершение и гармония. Ты на верном пути.' }
+        ];
+
+        function resetTarot() {
+            selectedCard = -1;
+            document.querySelectorAll('.tarot-card').forEach(c => {
+                c.classList.remove('selected', 'revealed');
+                c.removeAttribute('data-emoji');
+            });
+            document.getElementById('tarotResult').style.display = 'none';
+            document.getElementById('tarotBtn').style.display = 'block';
+        }
+
+        function selectCard(i) {
+            document.querySelectorAll('.tarot-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.tarot-card')[i].classList.add('selected');
+            selectedCard = i;
+            if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        }
+
+        async function doReading() {
+            if (selectedCard < 0) {
+                showToast('Выбери карту', 'error');
+                return;
+            }
+
+            // Используем попытку
+            if (!state.isPremium) {
+                try {
+                    const res = await fetch(`${API_URL}/use-reading`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Telegram-Init-Data': tg?.initData || ''
+                        },
+                        body: JSON.stringify({ user_id: state.userId, type: 'tarot' })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        state.freeUsed = data.freeUsed;
+                        state.readings++;
+                        updateUI();
+                    }
+                } catch (e) {
+                    state.freeUsed++;
+                    state.readings++;
+                    updateUI();
+                }
+            }
+
+            // Анимация
+            const card = document.querySelectorAll('.tarot-card')[selectedCard];
+            const rand = CARDS[Math.floor(Math.random() * CARDS.length)];
+
+            card.classList.add('revealed');
+            card.setAttribute('data-emoji', rand.emoji);
+
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+
+            setTimeout(() => {
+                document.getElementById('cardName').textContent = `${rand.emoji} ${rand.name}`;
+                document.getElementById('cardText').textContent = rand.text;
+                document.getElementById('tarotResult').style.display = 'block';
+                document.getElementById('tarotBtn').style.display = 'none';
+            }, 400);
+        }
+
+        // ============ HOROSCOPE ============
+        async function loadHoroscope() {
+            if (!state.isPremium) {
+                try {
+                    await fetch(`${API_URL}/use-reading`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Telegram-Init-Data': tg?.initData || ''
+                        },
+                        body: JSON.stringify({ user_id: state.userId, type: 'horoscope' })
+                    });
+                    state.freeUsed++;
+                    updateUI();
+                } catch (e) {
+                    state.freeUsed++;
+                    updateUI();
+                }
+            }
+
+            document.getElementById('horoscopeContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            setTimeout(() => {
+                const texts = [
+                    'Сегодня звёзды благоволят! Отличный день для новых начинаний.',
+                    'Энергия дня поддерживает творчество и общение. Действуй!',
+                    'Время для важных решений. Доверяй интуиции.',
+                    'Хороший период для финансов и карьеры.'
+                ];
+
+                document.getElementById('horoscopeContent').innerHTML = `
+                    <div style="font-weight:600;color:var(--accent-purple);margin-bottom:12px;">🌟 Гороскоп на сегодня</div>
+                    <div style="color:var(--text-secondary);line-height:1.7;">${texts[Math.floor(Math.random() * texts.length)]}</div>
+                `;
+            }, 1500);
+        }
+
+        // ============ SUBSCRIPTION ============
+        function openSubscription() {
+            document.getElementById('subModal').classList.add('active');
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function closeSubscription() {
+            document.getElementById('subModal').classList.remove('active');
+        }
+
+        async function pay(method) {
+            showToast('Создаю платёж...', 'success');
+
+            try {
+                const res = await fetch(`${API_URL}/create-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Telegram-Init-Data': tg?.initData || ''
+                    },
+                    body: JSON.stringify({
+                        user_id: state.userId,
+                        method: method,
+                        product: 'subscription'
+                    })
+                });
+
+                if (!res.ok) {
+                    showToast('Ошибка создания платежа', 'error');
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (method === 'stars' && data.invoiceLink) {
+                    // Telegram Stars
+                    if (tg) {
+                        tg.openInvoice(data.invoiceLink, (status) => {
+                            if (status === 'paid') {
+                                state.isPremium = true;
+                                updateUI();
+                                closeSubscription();
+                                showToast('Подписка активирована! 🎉');
+                            } else if (status === 'cancelled') {
+                                showToast('Оплата отменена', 'error');
+                            } else if (status === 'failed') {
+                                showToast('Ошибка оплаты', 'error');
+                            }
+                        });
+                    }
+                } else if (method === 'yookassa' && data.paymentUrl) {
+                    // ЮKassa — открываем ссылку
+                    if (tg) {
+                        tg.openLink(data.paymentUrl);
+                        
+                        // Проверяем статус каждые 3 секунды
+                        const paymentId = data.paymentId;
+                        let checks = 0;
+                        const checkInterval = setInterval(async () => {
+                            checks++;
+                            if (checks > 60) { // Максимум 3 минуты
+                                clearInterval(checkInterval);
+                                return;
+                            }
+
+                            try {
+                                const checkRes = await fetch(`${API_URL}/check-payment/${paymentId}`);
+                                const checkData = await checkRes.json();
+
+                                if (checkData.status === 'succeeded') {
+                                    clearInterval(checkInterval);
+                                    state.isPremium = true;
+                                    updateUI();
+                                    closeSubscription();
+                                    showToast('Подписка активирована! 🎉');
+                                }
+                            } catch (e) {}
+                        }, 3000);
+                    } else {
+                        window.open(data.paymentUrl, '_blank');
+                    }
+                } else {
+                    showToast('Ошибка', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка соединения', 'error');
+            }
+        }
+
+        // ============ REFERRAL ============
+        function shareReferral() {
+            const link = `https://t.me/${tg?.initDataUnsafe?.user?.username ? 'AstroAI_bot' : 'AstroAI_bot'}?start=ref_${state.userId}`;
+            const text = `🔮 Открой мир Таро и астрологии!\n${link}`;
+
+            if (tg) {
+                tg.switchInlineQuery(text, ['users']);
+            } else {
+                navigator.clipboard?.writeText(link);
+                showToast('Ссылка скопирована!');
+            }
+        }
+    </script>
+</body>
+</html>
