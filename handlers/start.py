@@ -23,7 +23,7 @@ class RegistrationStates(StatesGroup):
 
 
 WELCOME_TEXT = """
-🔮 *Добро пожаловать в Astro AI!*
+🔮 *Добро пожаловать в Luna AI!*
 
 Я — твой личный таролог и астролог, доступный 24/7.
 
@@ -222,4 +222,5 @@ async def show_profile(callback: CallbackQuery):
 🎁 *Бонус дней:* {ref_stats['total_bonus_days']}
 """
     
+
     await callback.message.edit_text(text, parse_mode="Markdown", reply_markup=get_back_keyboard())
