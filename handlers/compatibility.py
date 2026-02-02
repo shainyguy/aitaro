@@ -19,7 +19,7 @@ class CompatibilityStates(StatesGroup):
 def get_compatibility_menu() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="💕 По знакам зодиака", callback_data="compat_signs")],
-        [InlineKeyboardButton(text="📸 По фото пары", callback_data="compat_photo")],
+        [InlineKeyboardButton(text="📸 По фото пары (разработка)", callback_data="compat_photo")],
         [InlineKeyboardButton(text="◀️ Назад", callback_data="main_menu")]
     ])
 
@@ -186,4 +186,5 @@ async def wrong_photo_format(message: Message):
         "❌ Пожалуйста, отправь фотографию.\n"
         "Или нажми «Назад» для отмены.",
         reply_markup=get_back_keyboard("compatibility")
+
     )
