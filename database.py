@@ -1,6 +1,6 @@
 import aiosqlite
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import Dict, Any, Optional, List
 import json
 import hashlib
 
@@ -1004,3 +1004,4 @@ async def use_purchased_service(user_id: int, service_type: str) -> bool:
         await db.commit()
 
         return cursor.rowcount > 0
+
