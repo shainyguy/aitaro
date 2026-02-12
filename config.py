@@ -9,9 +9,6 @@ class Config:
     # Telegram
     BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
     BOT_USERNAME: str = os.getenv("BOT_USERNAME", "AstroAI_bot")
-
-    # 👑 ID ГЛАВНОГО АДМИНА (ваш Telegram ID)
-    SUPER_ADMIN_ID: int = int(os.getenv("SUPER_ADMIN_ID", "0"))
     
     # GigaChat (для генерации текстов)
     GIGACHAT_AUTH: str = os.getenv("GIGACHAT_AUTH", "")
