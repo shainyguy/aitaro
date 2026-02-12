@@ -11,7 +11,6 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, LabeledPrice, PreCheckoutQuery
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
-from handlers import admin
 
 from config import config
 from database import (
@@ -448,7 +447,6 @@ async def main():
     dp.include_router(astro_features.router)
     dp.include_router(payments.router)
     dp.include_router(referral.router)
-    dp.include_router(admin.router)
     
     # Платежи Stars
     dp.pre_checkout_query.register(handle_pre_checkout)
@@ -456,7 +454,7 @@ async def main():
     
     # Запуск веб-сервера
     await start_web_server()
-    dp.include_router(admin.router)
+    
     # Запуск бота
     await bot.delete_webhook(drop_pending_updates=True)
     logger.info("🔮 Astro AI Bot запущен!")
@@ -466,4 +464,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
